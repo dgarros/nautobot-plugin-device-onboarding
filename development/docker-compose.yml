@@ -20,12 +20,12 @@ services:
       - "./nautobot_config.py:/opt/nautobot/nautobot_config.py"
       - "../:/source"
     tty: true
-  worker:
+  celery:
     build:
       context: "../"
       dockerfile: "development/Dockerfile"
     image: "nautobot-device-onboarding/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER}"
-    entrypoint: "nautobot-server rqworker"
+    entrypoint: "nautobot-server celery worker -Q celery -B -l INFO"
     depends_on:
       - "nautobot"
     env_file:
@@ -34,12 +34,12 @@ services:
       - "./nautobot_config.py:/opt/nautobot/nautobot_config.py"
       - "../:/source"
     tty: true
-  celery:
+  onboarding:
     build:
       context: "../"
       dockerfile: "development/Dockerfile"
     image: "nautobot-device-onboarding/nautobot:${NAUTOBOT_VER}-py${PYTHON_VER}"
-    entrypoint: "nautobot-server celery worker -B -l INFO"
+    entrypoint: "nautobot-server celery worker -Q onboarding -B -l INFO"
     depends_on:
       - "nautobot"
     env_file:

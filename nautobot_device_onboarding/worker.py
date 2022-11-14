@@ -140,7 +140,7 @@ def onboard_device(task_id, credentials):  # pylint: disable=too-many-statements
 def enqueue_onboarding_task(task_id, credentials):
     """Detect worker type and enqueue task."""
     if CELERY_WORKER:
-        onboard_device_worker.delay(task_id, credentials)
+        onboard_device_worker.apply_async(args=[task_id, credentials], queue="onboarding")
 
     if not CELERY_WORKER:
         get_queue("default").enqueue("nautobot_device_onboarding.worker.onboard_device_worker", task_id, credentials)
